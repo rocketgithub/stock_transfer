@@ -8,6 +8,21 @@ import logging
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
+    
+    usuario_normal = fields.Boolean(compute='_compute_usuario_normal')
+    
+    def _compute_show_validate(self):
+        for picking in self:
+            if not self.user_has_groups('stock.group_stock_manager') and picking.picking_type_code != 'internal':
+                picking.show_validate = False
+                return
+                
+        res = super(StockPicking, self)._compute_show_validate()
+    
+    @api.depends('picking_type_id')
+    def _compute_usuario_normal(self):
+        for record in self:
+            record.usuario_normal = not self.user_has_groups('stock.group_stock_manager')
 
     def button_validate(self):
         usuario_inventario = self.user_has_groups('stock.group_stock_user')
