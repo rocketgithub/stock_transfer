@@ -13,7 +13,7 @@ class StockPicking(models.Model):
     
     def _compute_show_validate(self):
         for picking in self:
-            if not self.user_has_groups('stock.group_stock_manager') and self.env.user.default_location_id.id == self.location_dest_id.id:
+            if not self.user_has_groups('stock.group_stock_manager') and self.env.user.default_location_id.id != self.location_dest_id.id:
                 picking.show_validate = False
                 return
                 
